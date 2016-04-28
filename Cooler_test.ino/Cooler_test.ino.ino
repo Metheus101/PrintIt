@@ -18,6 +18,12 @@
 //Button
 #define buttonPin 2
 
+//PWM Frequent in kHz
+#define pwmfreq 1
+
+//PWM Cool in %
+#define pwmcool_p 50
+
 //--------------------------Bibliotheken-------------------------------
 
 //PID-Regler Library
@@ -221,7 +227,11 @@ void setup() {
   
   // -------Button Init-------
   pinMode(buttonPin, INPUT);  
- 
+
+  //Umrechnung PWM Cool
+  float pwmcool1 = pwmcool_p;
+  float pwmcool2 = pwmcool1 * 2.56;
+  int pwmcool = (int)pwmcool2;
 }
 
 void loop() {
