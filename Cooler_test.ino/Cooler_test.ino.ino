@@ -34,6 +34,9 @@
 //Temp Sensor Library
 #include "max6675.h"
 
+//PWM Libary
+#include <PWM.h>
+
 //--------------------------Variablen und Konstanten---------------------
 
 //Display Logo
@@ -78,8 +81,6 @@ MAX6675 ktc(ktcCLK, ktcCS, ktcSO);
 
 void stepperstart(){
 
-  //pinMode(3, OUTPUT);
-  pinMode(11, OUTPUT);
   TCCR2A = _BV(COM2A1) | _BV(COM2B1) | _BV(WGM20);
   TCCR2B = _BV(CS22);
   OCR2A = 100;
@@ -114,7 +115,7 @@ void thempread(){
         
 }
 
- void stepperstop(){
+void stepperstop(){
   a=0;
  }
 
@@ -124,7 +125,7 @@ int readpin(){
   return buttonState;
  }
 
- void introtext(void) {
+void introtext(void) {
   display.setTextSize(1);
       display.setTextColor(WHITE);
       display.setCursor(20,0);
@@ -179,7 +180,6 @@ void temptext(void) {
 void setup() {
 
   //----------PID Regler Input-------------
-
   Input= ktc.readCelsius();
   Setpoint = 50;
   myPID.SetMode(AUTOMATIC);
@@ -190,13 +190,11 @@ void setup() {
   Serial.begin(9600);
   // give the MAX a little time to settle
 
-
+  //-------Display---------
   // by default, we'll generate the high voltage from the 3.3v line internally! (neat!)
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3D (for the 128x64)
   // init done
 
-  //-------Display---------
-  
   // Show image buffer on the display hardware.
   // Since the buffer is intialized with an Adafruit splashscreen
   // internally, this will display the splashscreen.
@@ -228,6 +226,7 @@ void setup() {
 
 void loop() {
 
+  
   digitalWrite(3, LOW);
 
  // Button Status auslesen
