@@ -1,6 +1,42 @@
 
 //Programm zum Testen der PWM-Module mit Initialisierung des Displays und der Sensoren
 
+//--------------------------Defines-----------------------------------
+
+//Motortreiber
+#define stepPin   11
+#define dirPin    13
+#define ModePin1  8
+#define ModePin2  10
+#define ModePin3  12
+
+//Themperatursensor Ansschlüsse
+#define ktcSO  7
+#define ktcCS  6
+#define ktcCLK 5
+
+//Button
+#define buttonPin 2
+
+//--------------------------Bibliotheken-------------------------------
+
+//PID-Regler Library
+#include "PID_v1.h"
+
+//Display Library
+#include "Adafruit_GFX.h"
+#include "gfxfont.h"
+#include <SPI.h>
+#include <Wire.h>
+#include <Adafruit_SSD1306.h>
+#define OLED_RESET 4
+
+//Temp Sensor Library
+#include "max6675.h"
+
+//--------------------------Variablen und Konstanten---------------------
+
+//Display Logo
 static const unsigned char PROGMEM logo16_glcd_bmp[] =
 { B00000000, B11000000,
   B00000001, B11000000,
@@ -19,57 +55,26 @@ static const unsigned char PROGMEM logo16_glcd_bmp[] =
   B01110000, B01110000,
   B00000000, B00110000 };
 
-
-//Import PID-Regler Library
-#include "PID_v1.h"
-
 //Define Variables we'll be connecting to
 double Setpoint, Input, Output;
-
-//Specify the links and initial tuning parameters
-PID myPID(&Input, &Output, &Setpoint,100,1,1, DIRECT);
-
- 
-//Display Library
-#include "Adafruit_GFX.h"
-#include "gfxfont.h"
-#include <SPI.h>
-#include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
-#define OLED_RESET 4
-Adafruit_SSD1306 display(OLED_RESET);
-
-// Temp Sensor Library
-#include "max6675.h"
-
-
-//Themperatursensor Ansschlüsse initialisieren
-int ktcSO = 7;
-int ktcCS = 6;
-int ktcCLK = 5;
-
-MAX6675 ktc(ktcCLK, ktcCS, ktcSO);
-
-const int stepPin = 11;
-const int dirPin = 13;
-
-//Port für die Microsteps
-const int ModePin1 = 8;
-const int ModePin2 = 10;
-const int ModePin3 = 12;
 
 int a = 0;
 int b = 0;
 
-// Port Variable für den Schalter
-
-const int buttonPin = 2; 
-
-
 // Button Status
 int buttonState = 0;  
- 
+//-------------------------Init-----------------------------------------
+
+//Specify the links and initial tuning parameters
+PID myPID(&Input, &Output, &Setpoint,100,1,1, DIRECT);
+
+//Oled Reset
+Adafruit_SSD1306 display(OLED_RESET);
+
+//Temperatursensor Initialisierung
+MAX6675 ktc(ktcCLK, ktcCS, ktcSO);
+
+//----------------------------Funktionen------------------------------
 
 void stepperstart(){
 
@@ -173,7 +178,7 @@ void temptext(void) {
 
 void setup() {
 
-  //PID Regler Input
+  //----------PID Regler Input-------------
 
   Input= ktc.readCelsius();
   Setpoint = 50;
@@ -181,7 +186,6 @@ void setup() {
   digitalWrite(3,LOW);
   heaterpwm();
   
-
   //Serial begin für den Temp Sensor
   Serial.begin(9600);
   // give the MAX a little time to settle
@@ -190,36 +194,35 @@ void setup() {
   // by default, we'll generate the high voltage from the 3.3v line internally! (neat!)
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3D (for the 128x64)
   // init done
+
+  //-------Display---------
   
   // Show image buffer on the display hardware.
   // Since the buffer is intialized with an Adafruit splashscreen
   // internally, this will display the splashscreen.
-
   delay(2000);
   // Clear the buffer.
   display.clearDisplay();
   introtext(); 
   delay(500);
 
- 
- // Direction & Step Pin als Ausgang
+  //-------Motortreiber Init-------
+  // Direction & Step Pin als Ausgang
   pinMode(stepPin,OUTPUT);
   pinMode(dirPin,OUTPUT);
-
-// Ports für Microsteps als Ausgang setzen
+  // Ports für Microsteps als Ausgang setzen
   pinMode(ModePin1,OUTPUT);
   pinMode(ModePin2,OUTPUT);
   pinMode(ModePin3,OUTPUT);
 
- // Set Ports für Microsteps
- digitalWrite(ModePin1,HIGH);
- digitalWrite(ModePin2,HIGH);
- digitalWrite(ModePin3,HIGH);
+  // Set Ports für Microsteps
+  digitalWrite(ModePin1,HIGH);
+  digitalWrite(ModePin2,HIGH);
+  digitalWrite(ModePin3,HIGH);
 
   
-  // initialize the pushbutton pin as an input:
+  // -------Button Init-------
   pinMode(buttonPin, INPUT);  
-//  pinMode(ledPin, OUTPUT);
  
 }
 
