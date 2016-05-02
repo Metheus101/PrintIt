@@ -18,8 +18,10 @@
 //Button
 #define buttonPin 2
 
-//PWM Frequent in kHz
+//PWM
 #define pwmfreq 1
+#define pwmheat 3
+#define pwmcool 9
 
 //--------------------------Bibliotheken-------------------------------
 
@@ -69,6 +71,13 @@ int b = 0;
 
 // Button Status
 int buttonState = 0;  
+
+//PWM
+int percent = 10;
+int wert = 26;
+
+//Sonstige
+int firststart = 1;
 //-------------------------Init-----------------------------------------
 
 //Specify the links and initial tuning parameters
@@ -93,8 +102,7 @@ void stepperstart(){
 
 void heaterpwm(){
 
-  pinMode(3, OUTPUT);
-  //pinMode(11, OUTPUT);
+  pinMode(pwmheat, OUTPUT);
   TCCR2A = _BV(COM2A1) | _BV(COM2B1) | _BV(WGM20);
   TCCR2B = _BV(CS22);
   //OCR2A = 180;
@@ -180,6 +188,19 @@ void temptext(void) {
  
 }
 
+void percentwrite (int pwrite){
+  display.setTextSize(3);
+  display.setTextColor(WHITE);
+  display.setCursor(20,0);
+  display.clearDisplay();
+  display.println(pwrite);
+  display.setTextSize(1);
+  display.setCursor(32,23);
+  display.println("PWM Prozent");
+  display.display();
+  delay(1);
+}
+
 void setup() {
 
   //----------PID Regler Input-------------
@@ -224,6 +245,8 @@ void setup() {
   
   // -------Button Init-------
   pinMode(buttonPin, INPUT);  
+
+
 }
 
 void loop() 
@@ -236,5 +259,10 @@ void loop()
  //Wenn Knopf gedrückt wirkd
   if(buttonState==HIGH)
   {
+    if (firststart == 1)
+    {
+      firststart = 0;
+      
+    }
   }
 }
