@@ -21,9 +21,6 @@
 //PWM Frequent in kHz
 #define pwmfreq 1
 
-//PWM Cool in %
-#define pwmcool_p 50
-
 //--------------------------Bibliotheken-------------------------------
 
 //PID-Regler Library
@@ -227,67 +224,17 @@ void setup() {
   
   // -------Button Init-------
   pinMode(buttonPin, INPUT);  
-
-  //Umrechnung PWM Cool
-  float pwmcool1 = pwmcool_p;
-  float pwmcool2 = pwmcool1 * 2.56;
-  int pwmcool = (int)pwmcool2;
 }
 
-void loop() {
-
-  
-  digitalWrite(3, LOW);
+void loop() 
+  {
 
  // Button Status auslesen
   buttonState = readpin();
    
 
  //Wenn Knopf gedrückt wirkd
-  if(buttonState==HIGH){
-  
-  delay(300);
-  
-    starttext(); 
-     // miniature bitmap display
-    display.drawBitmap(57, 12,  logo16_glcd_bmp, 16, 16, 1);
-    display.display();
-    delay(3000);
-    temptext();
-    
-  
-    while(a==0){
-     
-      buttonState = readpin();
-      stepperstart();
-      thempread();
-      
-      //PID Regelung
-      Input = ktc.readCelsius();
-      myPID.Compute();
-      OCR2B = Output;
-      
-      if(buttonState==HIGH)
-      
-         {
-          
-          digitalWrite(11,LOW);
-          digitalWrite(3, LOW);
-          a=1;
-          stoptext();
-          
-          }
-      
-     }
-      
-      delay(300);
-  
-      a=0;  
-    }
-
- 
-     
- }
-
-
-
+  if(buttonState==HIGH)
+  {
+  }
+}
