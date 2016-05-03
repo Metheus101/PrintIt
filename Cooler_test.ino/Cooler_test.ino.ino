@@ -19,9 +19,8 @@
 #define buttonPin 2
 
 //PWM
-#define pwmfreq 1
-#define pwmheat 3
-#define pwmcool 9
+#define pwmheatPin 3
+#define pwmcoolPin 9
 
 //--------------------------Bibliotheken-------------------------------
 
@@ -38,9 +37,6 @@
 
 //Temp Sensor Library
 #include "max6675.h"
-
-//PWM Libary
-#include <PWM.h>
 
 //--------------------------Variablen und Konstanten---------------------
 
@@ -72,10 +68,6 @@ int b = 0;
 // Button Status
 int buttonState = 0;  
 
-//PWM
-int percent = 10;
-int wert = 26;
-
 //Sonstige
 int firststart = 1;
 //-------------------------Init-----------------------------------------
@@ -99,15 +91,6 @@ void stepperstart(){
   //OCR2B = 50;
 
  }
-
-void heaterpwm(){
-
-  pinMode(pwmheat, OUTPUT);
-  TCCR2A = _BV(COM2A1) | _BV(COM2B1) | _BV(WGM20);
-  TCCR2B = _BV(CS22);
-  //OCR2A = 180;
-  OCR2B = 0;
-}
 
 void thempread(){
 
@@ -202,13 +185,6 @@ void percentwrite (int pwrite){
 }
 
 void setup() {
-
-  //----------PID Regler Input-------------
-  Input= ktc.readCelsius();
-  Setpoint = 50;
-  myPID.SetMode(AUTOMATIC);
-  digitalWrite(3,LOW);
-  heaterpwm();
   
   //Serial begin für den Temp Sensor
   Serial.begin(9600);
