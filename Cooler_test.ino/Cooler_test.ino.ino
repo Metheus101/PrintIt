@@ -22,6 +22,8 @@
 #define pwmheatPin 3
 #define pwmcoolPin 9
 
+#define pwmstep 10  //Anstieg PWM Last in Prozent
+#define pwmselect 1 //Heat=1  Cool=0
 //--------------------------Bibliotheken-------------------------------
 
 //PID-Regler Library
@@ -68,8 +70,12 @@ int b = 0;
 // Button Status
 int buttonState = 0;  
 
-//Sonstige
-int firststart = 1;
+//PWM
+  int pwmprozent = 0;
+  int pwmlast = 0;
+  double pwmram = 0;
+  int pwmtestPin = 0;
+  
 //-------------------------Init-----------------------------------------
 
 //Specify the links and initial tuning parameters
@@ -222,6 +228,22 @@ void setup() {
   // -------Button Init-------
   pinMode(buttonPin, INPUT);  
 
+  //-------PWM Init--------
+  pinMode (pwmheatPin, OUTPUT);
+  pinMode (pwmcoolPin, OUTPUT);
+  analogWrite (pwmheatPin, 0);
+  analogWrite (pwmcoolPin, 0);
+  percentwrite (0);
+
+  if(pwmselect == 1)
+  {
+    pwmtestPin = pwmheatPin;
+  }
+  else
+  {
+    pwmtestPin = pwmcoolPin;
+  }
+  percentwrite(0);
 
 }
 
@@ -235,10 +257,22 @@ void loop()
  //Wenn Knopf gedrückt wirkd
   if(buttonState==HIGH)
   {
-    if (firststart == 1)
+    if((pwmprozent + pwmstep)>100)
     {
-      firststart = 0;
-      
+      pwmprozent = 0;
     }
+    else
+    {
+      pwmprozent = pwmprozent + pwmstep;
+    }
+    
+    pwmram = pwmprozent * 2,56;
+    pwmlast=(int)pwmram;
+    percentwrite(pwmprozent);
+    analogWrite (pwmtestPin, pwmlast);
+  }
+  else
+  {
+    delay(300);
   }
 }
