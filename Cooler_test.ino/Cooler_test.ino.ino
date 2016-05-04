@@ -22,12 +22,8 @@
 #define pwmheatPin 3
 #define pwmcoolPin 9
 
-#define pwmstep 10  //Anstieg PWM Last in Prozent
 #define pwmselect 1 //Heat=1  Cool=0
 //--------------------------Bibliotheken-------------------------------
-
-//PID-Regler Library
-#include "PID_v1.h"
 
 //Display Library
 #include "Adafruit_GFX.h"
@@ -75,11 +71,10 @@ int buttonState = 0;
   int pwmlast = 0;
   double pwmram = 0;
   int pwmtestPin = 0;
+  int pwmstep = 5;  //Anstieg PWM Last in Prozent
+
   
 //-------------------------Init-----------------------------------------
-
-//Specify the links and initial tuning parameters
-PID myPID(&Input, &Output, &Setpoint,100,1,1, DIRECT);
 
 //Oled Reset
 Adafruit_SSD1306 display(OLED_RESET);
@@ -233,7 +228,7 @@ void setup() {
   pinMode (pwmcoolPin, OUTPUT);
   analogWrite (pwmheatPin, 0);
   analogWrite (pwmcoolPin, 0);
-  percentwrite (0);
+  percentwrite (10);
 
   if(pwmselect == 1)
   {
@@ -247,29 +242,29 @@ void setup() {
 
 }
 
-void loop() 
-  {
+void loop() {
 
  // Button Status auslesen
   buttonState = readpin();
    
 
  //Wenn Knopf gedrückt wirkd
-  if(buttonState==HIGH)
+  if(buttonState == HIGH)
   {
     if((pwmprozent + pwmstep)>100)
     {
       pwmprozent = 0;
+      
     }
     else
     {
       pwmprozent = pwmprozent + pwmstep;
     }
-    
     pwmram = pwmprozent * 2,56;
     pwmlast=(int)pwmram;
     percentwrite(pwmprozent);
     analogWrite (pwmtestPin, pwmlast);
+    delay(300);
   }
   else
   {
